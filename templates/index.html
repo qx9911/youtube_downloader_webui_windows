@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube 下載器</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input[type="text"], input[type="submit"], select { padding: 10px; font-size: 16px; }
+        .message { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>YouTube 下載器</h1>
+    <form method="post" action="/download">
+        <label for="url">影片連結:</label>
+        <input type="text" id="url" name="url" placeholder="貼上 YouTube 影片連結" required>
+
+        <label for="format">下載格式:</label>
+        <select id="format" name="format">
+            <option value="mp4">MP4 影片</option>
+            <option value="mp3">MP3 音訊</option>
+        </select>
+
+        <label for="filename">自訂檔名 (選填，預設為影片標題):</label>
+        <input type="text" id="filename" name="filename" placeholder="輸入新的檔名">
+
+        <input type="submit" value="開始下載">
+    </form>
+
+    {% if message %}
+    <div class="message">{{ message }}</div>
+    {% endif %}
+</body>
+</html>

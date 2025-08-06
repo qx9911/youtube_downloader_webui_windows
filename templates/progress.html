@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>下載進度</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        #log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; background-color: #f9f9f9; }
+        .log-line { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>下載進度</h1>
+    <div id="log"></div>
+    <a href="/" style="display: block; margin-top: 20px;">返回首頁</a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const logElement = document.getElementById('log');
+            const urlParams = new URLSearchParams(window.location.search);
+            const url = "{{ url }}";
+            const format = "{{ format }}";
+            const filename = "{{ filename }}";
+            
+            const eventSource = new EventSource(`/stream_progress?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}&filename=${encodeURIComponent(filename)}`);
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const logLine = document.createElement('div');
+                logLine.className = 'log-line';
+                logLine.textContent = data.message;
+                logElement.appendChild(logLine);
+                logElement.scrollTop = logElement.scrollHeight; // 自動捲動到最底部
+
+                if (data.message === "下載成功！" || data.error) {
+                    eventSource.close();
+                }
+            };
+
+            eventSource.onerror = function(err) {
+                const logLine = document.createElement('div');
+                logLine.className = 'log-line';
+                logLine.textContent = '連線錯誤，請重試。';
+                logElement.appendChild(logLine);
+                console.error("EventSource failed:", err);
+                eventSource.close();
+            };
+        });
+    </script>
+</body>
+</html>
